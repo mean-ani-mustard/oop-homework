@@ -34,11 +34,22 @@ public class Piece {
 	 Makes its own copy of the array and the TPoints inside it.
 	*/
 	public Piece(TPoint[] points) {
-		// YOUR CODE HERE
-	}
-	
+		body = points.clone();
+		width = 0;
+		height = 0;
+		for(TPoint a:body){
+				width = Math.max(width, a.x+1);
+				height = Math.max(height, a.y+1);
+		}
+		skirt = new int[width];
+		Arrays.fill(skirt, height-1);
+		for (TPoint a: body){
+				skirt[a.x]=Math.min(skirt[a.x],a.y);
+		}
 
-	
+
+	}
+
 	
 	/**
 	 * Alternate constructor, takes a String with the x,y body points
@@ -87,8 +98,18 @@ public class Piece {
 	 rotated from the receiver.
 	 */
 	public Piece computeNextRotation() {
-		// YOUR CODE HERE
-		return null; // YOUR CODE HERE
+		TPoint [] points = new TPoint[4];
+		int x; int y;
+		for(int i = 0; i< body.length; i++){
+			x = height-1-body[i].y;
+			y = body[i].x;
+			TPoint p = new TPoint(x,y);
+			points[i] = p;
+		}
+
+
+		Piece pc = new Piece(points);
+		return pc;
 	}
 
 	/**
@@ -119,9 +140,9 @@ public class Piece {
 		// (null will be false)
 		if (!(obj instanceof Piece)) return false;
 		Piece other = (Piece)obj;
-		
-		// YOUR CODE HERE
-		return true;
+		if(width!=other.getWidth() || height != other.getHeight()) return false;
+
+		return Arrays.equals(skirt, other.getSkirt());
 	}
 
 
@@ -187,10 +208,18 @@ public class Piece {
 	 to the first piece.
 	*/
 	private static Piece makeFastRotations(Piece root) {
-		// YOUR CODE HERE
-		return null; // YOUR CODE HERE
+		if (root.next != null) return root;
+		Piece curr = root;
+		Piece following = curr.computeNextRotation();
+		root.next = following;
+		while(!following.equals(root)){
+			curr=following;
+			following = curr.computeNextRotation();
+			curr.next = following;
+		}
+		curr.next = root;
+		return root;
 	}
-	
 	
 
 	/**
