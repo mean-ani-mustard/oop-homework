@@ -45,7 +45,7 @@ public class Sudoku {
 	"5 2 0 0 0 6 7 9 0",
 	"6 0 0 0 2 1 0 4 0",
 	"0 0 0 5 3 0 9 0 0",
-	"0 3 0 0 0 0 0 5 1");
+	"0 3 0 0 0 0 0 5 0");
 	
 	
 	public static final int SIZE = 9;  // size of the whole 9x9 puzzle
@@ -133,14 +133,34 @@ public class Sudoku {
 		System.out.println(sudoku.getSolutionText());
 	}
 	
-	
+	private int [][] grid;
+	private int [][] solution;
+	private int solNumber;
+	private long time;
+	ArrayList<Spot> spots;
+
 	
 
 	/**
 	 * Sets up based on the given ints.
 	 */
 	public Sudoku(int[][] ints) {
-		// YOUR CODE HERE
+		assert(ints.length==SIZE);
+		assert(ints[0].length==SIZE);
+		grid = ints;
+		solNumber = 0;
+		spotList();
+		solution = new int[SIZE][SIZE];
+	}
+
+	private void spotList(){
+		spots = new ArrayList<>();
+		for (int i = 0; i < SIZE; i++)
+			for (int j = 0; j < SIZE; j++)
+				if (grid[i][j] == 0) {
+					spots.add(new Spot(i, j));
+				}
+
 	}
 	
 	
@@ -149,15 +169,113 @@ public class Sudoku {
 	 * Solves the puzzle, invoking the underlying recursive search.
 	 */
 	public int solve() {
-		return 0; // YOUR CODE HERE
+		time = -System.currentTimeMillis();
+
+		solveSudoku(0);
+		time+=System.currentTimeMillis();
+		return solNumber;
+	}
+
+	private void solveSudoku(int startIndex){
+		if(solNumber>=MAX_SOLUTIONS) return;
+		if(startIndex>= spots.size() ){
+			if(solNumber==0){
+				firstSol();
+			}
+			solNumber++;
+			return;
+		}
+		Spot sp = spots.get(startIndex);
+		HashSet<Integer> currPossibilities = sp.probValues();
+		for(int a: currPossibilities){
+			sp.set(a);
+			solveSudoku(startIndex+1);
+			sp.set(0);
+		}
+
+	}
+
+	private void firstSol(){
+		for(int i = 0; i < SIZE; i++){
+			System.arraycopy(grid[i], 0, solution[i], 0, SIZE );
+
+		}
 	}
 	
 	public String getSolutionText() {
-		return ""; // YOUR CODE HERE
+		if(solNumber==0) return "No Solution";
+		StringBuilder solText = new StringBuilder();
+		for(int i = 0; i < SIZE; i++){
+			for(int j = 0; j < SIZE; j++){
+				solText.append(solution[i][j]).append(" ");
+			}
+			solText.append("\n");
+		}
+
+		return solText.toString();
 	}
 	
 	public long getElapsed() {
-		return 0; // YOUR CODE HERE
+		return time;
+	}
+
+	/*
+	 Spot class to help us store probable values for each spot on the sudoku grid.
+	 */
+	private class Spot {
+		int x;
+		int y;
+
+		public Spot(int x, int y){
+			this.x=x;
+			this.y=y;
+		}
+
+		public void set (int value){
+			if(value>9 || value<=0){
+				grid[this.x][this.y] = 0;
+				return;
+			}
+			grid[this.x][this.y] = value;
+		}
+		//method to calculate what goes in the probable values set. We first put all the values
+		//in the set and afterwards remove ones that are repeated in the same row, column or square.
+		public HashSet<Integer> probValues(){
+			HashSet<Integer> res =  new HashSet<>(Arrays.asList(1,2,3,4,5,6,7,8,9));
+
+			res.removeAll(rowVals(this.x));
+			res.removeAll((colVals(this.y)));
+			res.removeAll((squareVals(this.x/PART * PART, this.y/PART *PART)));
+
+			return res;
+
+		}
+		private Set<Integer> rowVals(int x) {
+			HashSet<Integer> values = new HashSet<>();
+			for (int i = 0; i < SIZE; i++) {
+				values.add(grid[x][i]);
+			}
+			return values;
+		}
+
+		private Set<Integer> colVals(int y) {
+			HashSet<Integer> values = new HashSet<>();
+			for (int i = 0; i < SIZE; i++) {
+				values.add(grid[i][y]);
+			}
+			return values;
+		}
+
+		private Set<Integer> squareVals(int x, int y) {
+			HashSet<Integer> values = new HashSet<>();
+			for (int i = 0; i < PART; i++) {
+				for (int j = 0; j < PART; j++) {
+					values.add(grid[x + i][y + j]);
+				}
+			}
+			return values;
+		}
+
 	}
 
 }
