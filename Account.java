@@ -1,5 +1,7 @@
 // Account.java
 
+import java.math.BigDecimal;
+
 /*
  Simple, thread-safe Account class encapsulates
  a balance and a transaction count.
@@ -19,6 +21,33 @@ public class Account {
 		this.id = id;
 		this.balance = balance;
 		transactions = 0;
+	}
+
+
+	public synchronized void deposit(int amount) {
+		balance = balance+amount;
+		transactions++;
+	}
+	public synchronized void withdraw(int amount) {
+		balance = balance-amount;
+		transactions++;
+	}
+
+	public synchronized int getBalance() {
+		return balance;
+	}
+
+	public synchronized int getNumTransactions() {
+		return transactions;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	@Override
+	public synchronized String toString() {
+		return "Account " + id + ": balance=" + balance + ", transactions=" + transactions;
 	}
 	
 }
