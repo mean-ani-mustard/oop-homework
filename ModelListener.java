@@ -7,5 +7,5 @@
 */
 
 public interface ModelListener {
-    public void modelChanged(DShapeModel model); 
+    //public void modelChanged(DShapeModel model);
 }

@@ -1,4 +1,4 @@
-USE c_cs108_psyoung;
+USE myStudentStore;
 
 DROP TABLE IF EXISTS products;
  -- remove table if it already exists and start from scratch
