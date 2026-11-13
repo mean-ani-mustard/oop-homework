@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="metropolises.sql" type="DatabaseScript" editBeforeRun="true" singleton="false" nameIsGenerated="true">
+    <script-file value="$PROJECT_DIR$/metropolises.sql" />
+    <script-mode>FILE</script-mode>
+    <data-source id="0fc6ffb7-2432-43da-9a3c-f9c067cd8647" />
+    <method v="2" />
+  </configuration>
+</component>
